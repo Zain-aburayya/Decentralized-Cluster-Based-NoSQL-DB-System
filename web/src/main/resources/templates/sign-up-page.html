@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f1f1;
+        }
+        .button-group {
+            background-color: #fff;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .button-group button {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: blue;
+            color: #fff;
+            font-size: 16px;
+        }
+        .button-group button:hover {
+            background-color: lightblue;
+        }
+    </style>
+</head>
+<body>
+<div class="button-group">
+    <form action="/sign-up/user" method="get">
+        <button type="submit">User</button>
+    </form>
+    <form action="/sign-up/admin" method="get">
+        <button type="submit">Admin</button>
+    </form>
+</div>
+</body>
+</html>

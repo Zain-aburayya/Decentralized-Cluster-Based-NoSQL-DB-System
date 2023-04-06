@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Collection</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f2f2f2;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        #wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin: 0 0 20px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .input-container label {
+            flex-basis: 100px;
+            margin-right: 10px;
+        }
+
+        .input-container input[type="text"] {
+            flex-grow: 1;
+            margin-bottom: 0;
+        }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            background-color: #008CBA;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #006080;
+        }
+    </style>
+</head>
+<body>
+<div id="wrapper">
+    <h1>Create Collection</h1>
+    <form id="myForm" method="post" action="/collection/create">
+        <label for="db_name">Database name:</label>
+        <input type="text" name="db_name" id="db_name">
+        <label for="collection_name">Collection name:</label>
+        <input type="text" name="collection_name" id="collection_name">
+        <div id="inputFields" class="input-container">
+            <label for="input1">Field 1:</label>
+            <input type="text" id="input1" name="input1">
+        </div>
+        <button type="button" onclick="addInput()">Add Input Field</button>
+        <button type="submit">Create Collection</button>
+    </form>
+</div>
+
+<script>
+      let inputCount = 1;
+
+      function addInput() {
+        inputCount++;
+        const inputFields = document.getElementById('inputFields');
+
+        const inputContainer = document.createElement('div');
+        inputContainer.classList.add('input-container');
+
+        const label = document.createElement('label');
+        label.setAttribute('for', `input${inputCount}`);
+        label.textContent = `Field ${inputCount}:`;
+        inputContainer.appendChild(label);
+
+        const input = document.createElement('input');
+        input.setAttribute('type', 'text');
+        input.setAttribute('id', `input${inputCount}`);
+        input.setAttribute('name', `input${inputCount}`);
+        inputContainer.appendChild(input);
+
+        inputFields.appendChild(inputContainer);
+      }
+    </script>
+</body>
+</html>

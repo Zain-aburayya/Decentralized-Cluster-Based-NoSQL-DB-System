@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SignUp Admin</title>
+    <style>
+body {
+  background-color: #f2f2f2;
+  font-family: Arial, sans-serif;
+}
+
+form {
+  width: 400px;
+  margin: 50px auto;
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+}
+
+input[type="text"],
+input[type="password"] {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 3px;
+  background-color: #f2f2f2;
+  font-size: 16px;
+}
+
+input[type="submit"] {
+  background-color: #4CAF50;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 3px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+input[type="submit"]:hover {
+  background-color: #3e8e41;
+}
+
+
+    </style>
+</head>
+<body>
+<form action="/sign/admin" method="post">
+    Username:<input type="text" name="username">
+    <br>
+    Admin username:<input type="text" name="admin" >
+    <br>
+    Admin token:<input type="text" name="token" id>
+    <input type="submit" value="Sign up">
+</form>
+</body>
+</html>

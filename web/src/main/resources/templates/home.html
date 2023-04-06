@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f1f1f1;
+        }
+        .button-group {
+            background-color: #fff;
+            padding: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .button-group button {
+            display: block;
+            margin: 10px auto;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: blue;
+            color: #fff;
+            font-size: 16px;
+        }
+        .button-group button:hover {
+            background-color: lightblue;
+        }
+    </style>
+</head>
+<body>
+<form action="/database/list" method="get">
+    <div class="button-group">
+        <button type="submit">Show Databases</button>
+        <button type="submit" formaction="/collection/list">Show Collections</button>
+        <button type="submit" formaction="/document/list">Show Documents</button>
+    </div>
+</form>
+<form action="/database/create" method="get">
+    <div class="button-group">
+        <button type="submit">Create Database</button>
+        <button type="submit" formaction="/collection/create">Create Collection</button>
+        <button type="submit" formaction="/document/add">Add Document</button>
+    </div>
+</form>
+<form action="/database/delete" method="get">
+    <div class="button-group">
+        <button type="submit">Delete Database</button>
+        <button type="submit" formaction="/collection/delete">Delete Collection</button>
+        <button type="submit" formaction="/document/delete">Delete Document</button>
+    </div>
+</form>
+<form action="/document/update" method="get">
+    <div class="button-group">
+        <button type="submit">Update Document</button>
+    </div>
+</form>
+</body>
+</html>
