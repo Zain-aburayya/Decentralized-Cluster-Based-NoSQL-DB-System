@@ -103,6 +103,11 @@ public class Collection {
         File file = new File(path);
         if(!file.exists())
             return new ArrayList<>();
-        return Arrays.asList(file.list()).subList(1,file.list().length);
+        List<String> fileList = Arrays.asList(file.list());
+        List<String> tempList = new ArrayList<>();
+        for(int i = 1 ; i < fileList.size() ; i++){
+            tempList.add(fileList.get(i));
+        }
+        return tempList;
     }
 }
