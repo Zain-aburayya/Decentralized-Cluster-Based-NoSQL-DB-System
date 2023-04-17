@@ -28,13 +28,12 @@ public class PostController {
                                 @RequestHeader("USERNAME") String username,
                                 @RequestHeader("TOKEN") String token){
         if(affinity.equalsIgnoreCase("true")){
-            if(!authenticationService.authenticateUser(username,token))
+            if(!authenticationService.authenticateUser(username,token)
+                    && !authenticationService.authenticateAdmin(username,token))
                 return "no permission";
-            Affinity.getInstance().collectionAffinity(db_name,collection_name,schema);
+            return Affinity.getInstance().collectionAffinity(db_name,collection_name,schema);
         }
-        else
-            collectionService.addCollection(db_name,collection_name,schema,update);
-        return "collection";
+        return collectionService.addCollection(db_name,collection_name,schema,update);
     }
     @PostMapping("/db/add/document/{db_name}/{collection_name}/{update}/{affinity}") // done
     @ResponseBody
@@ -45,12 +44,11 @@ public class PostController {
                               @RequestHeader("USERNAME") String username,
                               @RequestHeader("TOKEN") String token){
         if(affinity.equalsIgnoreCase("true")){
-            if(!authenticationService.authenticateUser(username,token))
+            if(!authenticationService.authenticateUser(username,token)
+                    && !authenticationService.authenticateAdmin(username,token))
                 return "no permission";
-            Affinity.getInstance().documentAffinity(db_name,collection_name,json);
+            return Affinity.getInstance().documentAffinity(db_name,collection_name,json);
         }
-        else
-            documentService.addDocument(db_name, collection_name, json,update);
-        return "document";
+        return documentService.addDocument(db_name, collection_name, json,update);
     }
 }

@@ -31,29 +31,28 @@ public class Database {
         return dbDirectory.isDirectory() && dbDirectory.exists();
     }
 
-    @Async
-    public Future<String> createDB(String db_name, String update){
+    public String createDB(String db_name, String update){
         if(isExist(db_name)){
-            return CompletableFuture.completedFuture("Database is already exist ... ");
+            return "Database is already exist ... ";
         }
         boolean isUpdate = update.equalsIgnoreCase("update");
         if(isUpdate && this.isExist(db_name)){
             if(workers.checkWorkersDatabase(db_name)){
-                return CompletableFuture.completedFuture("database is already exist ...");
+                return "database is already exist ...";
             }
         }
         else if(this.isExist(db_name)){
-            return CompletableFuture.completedFuture("database is already exist ...");
+            return "database is already exist ...";
         }
         File schema = new File(DB_PATH + db_name + "/schema");
         schema.mkdirs();
         if(isUpdate)
             workers.buildDatabase(db_name);
         Affinity.getInstance().updateAffinity();
-        return CompletableFuture.completedFuture("Creating successfully");
+        return "Creating successfully";
     }
-    @Async
-    public Future<Boolean> deleteDB(String db_name, String update){
+
+    public Boolean deleteDB(String db_name, String update){
         File file = new File(DB_PATH + db_name);
         if(file.exists() && file.isDirectory()){
             File[] files = file.listFiles();
@@ -64,9 +63,9 @@ public class Database {
             if(update.equalsIgnoreCase("update"))
                 workers.deleteDatabase(db_name);
             Affinity.getInstance().updateAffinity();
-            return CompletableFuture.completedFuture(file.delete());
+            return file.delete();
         }
-        return CompletableFuture.completedFuture(false);
+        return false;
     }
 
     public List<String> DatabaseList(){

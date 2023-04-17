@@ -10,7 +10,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;
-import org.springframework.scheduling.annotation.Async;
 
 import java.io.*;
 
@@ -19,7 +18,6 @@ public class Document {
     private final JsonValidation jsonValidation = new JsonValidation();
     private final Workers workers = new Workers();
     @SneakyThrows
-    @Async
     public String addDocument(String db_name , String collection_name , String json, String update){
         String path = Database.getInstance().getDB_PATH() + db_name + "/" + collection_name + ".json";
         File file = new File(path);
@@ -72,9 +70,9 @@ public class Document {
                 .getByProperty(db_name, collection_name, "id", value);
     }
 
-    public void deleteById(String db_name , String collection_name ,
+    public String deleteById(String db_name , String collection_name ,
                            String value, String update){
-        HashIndexing.getInstance().deleteById(db_name, collection_name, value , update);
+        return HashIndexing.getInstance().deleteById(db_name, collection_name, value , update);
     }
 
     public String updateDocument(String db_name , String collection_name ,

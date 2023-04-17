@@ -13,7 +13,7 @@ public class CollectionService {
     private final Database database = Database.getInstance();
     @SneakyThrows
     public String addCollection(String db_name , String collection_name , String schema, String update){
-        return collection.addCollection(db_name,collection_name,schema,update).get();
+        return collection.addCollection(db_name,collection_name,schema,update);
     }
 
     public boolean isExist(String db_name , String collection_name){
@@ -22,7 +22,7 @@ public class CollectionService {
 
     @SneakyThrows
     public boolean deleteCollection(String db_name , String collection_name, String update){
-        return collection.deleteCollection(db_name , collection_name , update).get();
+        return collection.deleteCollection(db_name , collection_name , update);
     }
 
     public List<String> getList(String db_name) {

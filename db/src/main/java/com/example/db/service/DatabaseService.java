@@ -11,11 +11,11 @@ public class DatabaseService {
     private final Database database = Database.getInstance();
     @SneakyThrows
     public String createDatabase(String db_name, String update){
-        return database.createDB(db_name,update).get();
+        return database.createDB(db_name,update);
     }
     @SneakyThrows
     public boolean deleteDatabase(String db_name, String update){
-        return database.deleteDB(db_name,update).get();
+        return database.deleteDB(db_name,update);
     }
     public boolean isExist(String db_name){
         return database.isExist(db_name);

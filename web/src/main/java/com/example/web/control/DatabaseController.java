@@ -58,12 +58,9 @@ public class DatabaseController {
         User login = (User) session.getAttribute("login");
         if(login == null)
             return "login";
-        if(!databaseService.isExist(db_name,session)){
-            model.addAttribute("result","no database");
-            return "response";
-        }
-        databaseService.deleteDatabase(db_name,session);
-        model.addAttribute("result" , "deleted done");
+        Boolean flag = databaseService.deleteDatabase(db_name,session);
+        String response = Boolean.TRUE.equals(flag) ? "done" : "failed";
+        model.addAttribute("result" , "deleted " + response);
         return "response";
     }
 

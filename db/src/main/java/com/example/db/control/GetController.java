@@ -2,18 +2,13 @@ package com.example.db.control;
 
 import com.example.db.affinity.Affinity;
 import com.example.db.authentication.AuthenticationService;
-import com.example.db.cluster.Workers;
 import com.example.db.index.HashIndexing;
 import com.example.db.service.CollectionService;
 import com.example.db.service.DatabaseService;
 import com.example.db.service.DocumentService;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.util.List;
 
 @RestController
@@ -39,15 +34,14 @@ public class GetController {
                                  @RequestHeader("USERNAME") String username,
                                  @RequestHeader("TOKEN") String token){
         if(affinity.equalsIgnoreCase("true")){
-            if(!authenticationService.authenticateUser(username,token))
+            if(!authenticationService.authenticateUser(username,token)
+            && !authenticationService.authenticateAdmin(username,token))
                 return "no permission";
             if(databaseService.isExist(db_name))
                 return "already exist";
-            Affinity.getInstance().databaseAffinity(db_name);
+            return Affinity.getInstance().databaseAffinity(db_name);
         }
-        else
-            return databaseService.createDatabase(db_name,update);
-        return "database";
+        return databaseService.createDatabase(db_name,update);
     }
 
     @GetMapping("/db/find/{db_name}")
@@ -87,13 +81,11 @@ public class GetController {
                          @RequestHeader("USERNAME") String username,
                          @RequestHeader("TOKEN") String token){
         if(affinity.equalsIgnoreCase("true")){
-            if(!authenticationService.authenticateUser(username,token))
+            if(!authenticationService.authenticateAdmin(username,token))
                 return "no permission";
-            Affinity.getInstance().deleteDocumentAffinity(db_name,collection_name,value);
+            return Affinity.getInstance().deleteDocumentAffinity(db_name,collection_name,value);
         }
-        else
-            documentService.deleteById(db_name, collection_name, value, update);
-        return "delete it successfully ...";
+        return documentService.deleteById(db_name, collection_name, value, update);
     }
 
     @GetMapping("/database/list")

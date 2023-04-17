@@ -56,11 +56,6 @@ public class DocumentController {
         User login = (User) session.getAttribute("login");
         if(login == null)
             return "login";
-        if(!collectionService.isExist(db_name,collection_name,session) ||
-                !databaseService.isExist(db_name,session)){
-            model.addAttribute("result","no database or collection");
-            return "response";
-        }
         String path = "/document/add/" + db_name + "/" + collection_name;
         model.addAttribute("path",path);
         model.addAttribute("propertyList",documentService.schemaProp(db_name,collection_name,session));
@@ -94,11 +89,6 @@ public class DocumentController {
         User login = (User) session.getAttribute("login");
         if(login == null)
             return "login";
-        if(!collectionService.isExist(db_name,collection_name,session) ||
-                !databaseService.isExist(db_name,session)){
-            model.addAttribute("result","no database or collection");
-            return "response";
-        }
         String response = documentService.deleteDocument(db_name,collection_name, id ,session);
         model.addAttribute("result",response);
         return "response";
@@ -122,11 +112,6 @@ public class DocumentController {
         User login = (User) session.getAttribute("login");
         if(login == null)
             return "login";
-        if(!collectionService.isExist(db_name,collection_name,session) ||
-                !databaseService.isExist(db_name,session)){
-            model.addAttribute("result","no database or collection");
-            return "response";
-        }
         String response = documentService.updateDocument(db_name, collection_name, id, prop, value, session);
         model.addAttribute("result",response);
         return "response";

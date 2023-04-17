@@ -1,13 +1,9 @@
 package com.example.db.control;
 
 import com.example.db.affinity.Affinity;
-import com.example.db.authentication.AuthenticationModel;
 import com.example.db.authentication.AuthenticationService;
-import com.example.db.cluster.Workers;
 import com.example.db.service.DocumentService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/worker")
@@ -34,11 +30,9 @@ public class PutController {
         if(affinity.equalsIgnoreCase("true")){
             if(!authenticationService.authenticateAdmin(username,token))
                 return "no permission";
-            Affinity.getInstance().updateDocumentAffinity(db_name, collection_name, id, prop , value);
+            return Affinity.getInstance().updateDocumentAffinity(db_name, collection_name, id, prop , value);
         }
-        else
-            return documentService.updateDocument(db_name, collection_name, id, prop , value , update);
-        return "update document";
+        return documentService.updateDocument(db_name, collection_name, id, prop , value , update);
     }
 
     @GetMapping("/document/list/{db_name}/{collection_name}")

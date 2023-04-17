@@ -19,9 +19,9 @@ public class DocumentService {
         return document.getByProperty(db_name, collection_name, prop, value);
     }
 
-    public void deleteById(String db_name , String collection_name ,
+    public String deleteById(String db_name , String collection_name ,
                            String value, String update){
-        document.deleteById(db_name, collection_name,value , update);
+        return document.deleteById(db_name, collection_name,value , update);
     }
     public String updateDocument(String db_name , String collection_name ,
                                String id , String prop , String value , String update){

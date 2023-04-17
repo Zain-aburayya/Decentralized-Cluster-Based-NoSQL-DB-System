@@ -29,11 +29,9 @@ public class DeleteController {
         if(affinity.equalsIgnoreCase("true")){
             if(!authenticationService.authenticateAdmin(username,token))
                 return "no permission";
-            Affinity.getInstance().deleteDatabaseAffinity(db_name);
+            return Affinity.getInstance().deleteDatabaseAffinity(db_name);
         }
-        else
-            return databaseService.deleteDatabase(db_name,update) ? "delete-success" : "delete-fail";
-        return "delete-success";
+        return databaseService.deleteDatabase(db_name,update) ? "delete-success" : "delete-fail";
     }
 
     @DeleteMapping("/db/delete/collection/{db_name}/{collection_name}/{update}/{affinity}") //done
@@ -46,11 +44,9 @@ public class DeleteController {
         if(affinity.equalsIgnoreCase("true")){
             if(!authenticationService.authenticateAdmin(username,token))
                 return "no permission";
-            Affinity.getInstance().deleteCollectionAffinity(db_name,collection_name);
+            return Affinity.getInstance().deleteCollectionAffinity(db_name,collection_name);
         }
-        else
-            return collectionService.deleteCollection(db_name,collection_name,update) ? "delete-success" : "delete-fail";
-        return "delete-success";
+        return collectionService.deleteCollection(db_name,collection_name,update) ? "delete-success" : "delete-fail";
     }
 
 }

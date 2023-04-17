@@ -10,7 +10,7 @@ import java.net.URL;
 
 public class AffinityBroadcast {
     @SneakyThrows
-    public void buildDatabase(String db_name , String port){
+    public String buildDatabase(String db_name , String port){
         String url = "http://" + port + ":8080";
         URL dist = new URL(url + "/worker/db/create/database/" + db_name + "/update/false");
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
@@ -19,11 +19,17 @@ public class AffinityBroadcast {
         conn.setRequestProperty("TOKEN" , "");
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(conn.getInputStream()));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
         in.close();
+        return response.toString();
     }
 
     @SneakyThrows
-    public void buildCollection(String db_name,String collection_name , String json , String port){
+    public String buildCollection(String db_name,String collection_name , String json , String port){
         String url = "http://" + port + ":8080";
         URL dist = new URL(url + "/worker/db/add/collection/" + db_name + "/" + collection_name +"/update/false");
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
@@ -43,10 +49,11 @@ public class AffinityBroadcast {
             response.append(inputLine);
         }
         in.close();
+        return response.toString();
     }
 
     @SneakyThrows
-    public void buildDocument(String db_name , String collection_name , String json , String port){
+    public String buildDocument(String db_name , String collection_name , String json , String port){
         String url = "http://" + port + ":8080";
         URL dist = new URL(url + "/worker/db/add/document/" + db_name + "/" + collection_name +"/update/false");
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
@@ -66,10 +73,11 @@ public class AffinityBroadcast {
             response.append(inputLine);
         }
         in.close();
+        return response.toString();
     }
 
     @SneakyThrows
-    public void deleteCollection(String db_name, String collection_name, String port) {
+    public String deleteCollection(String db_name, String collection_name, String port) {
         String url = "http://" + port + ":8080";
         URL dist = new URL(url + "/worker/db/delete/collection/" + db_name + "/" +collection_name+ "/update/false");
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
@@ -78,10 +86,16 @@ public class AffinityBroadcast {
         conn.setRequestProperty("TOKEN" , "");
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(conn.getInputStream()));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
         in.close();
+        return response.toString();
     }
     @SneakyThrows
-    public void deleteDatabase(String db_name, String port) {
+    public String deleteDatabase(String db_name, String port) {
         String url = "http://" + port + ":8080";
         URL dist = new URL(url + "/worker/db/delete/database/" + db_name + "/update/false");
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
@@ -90,11 +104,17 @@ public class AffinityBroadcast {
         conn.setRequestProperty("TOKEN" , "");
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(conn.getInputStream()));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
         in.close();
+        return response.toString();
     }
 
     @SneakyThrows
-    public void updateDocument(String db_name, String collection_name, String id
+    public String updateDocument(String db_name, String collection_name, String id
             , String prop, String value, String port) {
         String url = "http://" + port + ":8080";
         URL dist = new URL(url + "/worker/db/update/" + db_name + "/" + collection_name +
@@ -116,10 +136,11 @@ public class AffinityBroadcast {
             response.append(inputLine);
         }
         in.close();
+        return response.toString();
     }
 
     @SneakyThrows
-    public void deleteDocument(String db_name, String collection_name, String value, String port) {
+    public String deleteDocument(String db_name, String collection_name, String value, String port) {
         String url = "http://" + port + ":8080";
         URL dist = new URL(url + "/worker/db/delete/document/" + db_name + "/" +collection_name + "/" + value + "/update/false");
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
@@ -134,5 +155,6 @@ public class AffinityBroadcast {
             response.append(inputLine);
         }
         in.close();
+        return response.toString();
     }
 }

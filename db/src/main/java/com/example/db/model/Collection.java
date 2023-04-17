@@ -8,15 +8,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
-import org.springframework.scheduling.annotation.Async;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 
 public class Collection {
 
@@ -28,21 +25,20 @@ public class Collection {
         return file.exists();
     }
     @SneakyThrows
-    @Async
-    public Future<String> addCollection(String db_name, String collection_name , String json, String update) {
+    public String addCollection(String db_name, String collection_name , String json, String update) {
         String path = Database.getInstance().getDB_PATH() + db_name;
         if(!Database.getInstance().isExist(db_name)){
-            return CompletableFuture.completedFuture("database not found ...");
+            return "database not found ...";
         }
         String jsonFile = path + "/" + collection_name + ".json";
         boolean isUpdate = update.equalsIgnoreCase("update");
         if(isUpdate && this.isExist(db_name,collection_name)){
             if(workers.checkWorkersCollection(db_name,collection_name)){
-                return CompletableFuture.completedFuture("database is already exist ...");
+                return "database is already exist ...";
             }
         }
         else if(this.isExist(db_name,collection_name)){
-            return CompletableFuture.completedFuture("database is already exist ...");
+            return "database is already exist ...";
         }
         if(isUpdate)
             workers.buildCollection(db_name, collection_name, json);
@@ -55,7 +51,7 @@ public class Collection {
         fileWriter.write(jsonObject.toString());
         fileWriter.close();
         Affinity.getInstance().updateAffinity();
-        return CompletableFuture.completedFuture("added Collection ...");
+        return "added Collection ...";
     }
     @SneakyThrows
     public void addSchema(String path , String schema ){
@@ -82,8 +78,7 @@ public class Collection {
         File file = new File(path);
         objectMapper.writeValue(file, schemaNode);
     }
-    @Async
-    public Future<Boolean> deleteCollection(String db_name, String collection_name, String update){
+    public Boolean deleteCollection(String db_name, String collection_name, String update){
         String path = Database.getInstance().getDB_PATH() + db_name + "/" + collection_name + ".json";
         File file = new File(path);
         if(file.exists()){
@@ -93,9 +88,9 @@ public class Collection {
             file.delete();
             path = Database.getInstance().getDB_PATH() + db_name + "/schema/schema_" + collection_name +".json";
             file = new File(path);
-            return CompletableFuture.completedFuture(file.delete());
+            return file.delete();
         }
-        return CompletableFuture.completedFuture(false);
+        return false;
     }
 
     public List<String> getList(String db_name) {

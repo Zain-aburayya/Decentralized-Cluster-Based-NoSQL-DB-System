@@ -50,8 +50,9 @@ public class CollectionController {
             jsonMap.put(entry.getValue() , "");
         }
         String json = mapper.writeValueAsString(jsonMap);
-        collectionService.createCollection(db_name,collection_name,json,session);
-        return "create-collection";
+        String response = collectionService.createCollection(db_name,collection_name,json,session);
+        model.addAttribute("result" , response);
+        return "response";
     }
     @GetMapping("/delete")
     public String getDeleteCollection(){
@@ -67,11 +68,6 @@ public class CollectionController {
         User login = (User) session.getAttribute("login");
         if(login == null)
             return "login";
-        if(!collectionService.isExist(db_name,collection_name,session) ||
-                !databaseService.isExist(db_name,session)){
-            model.addAttribute("result","no database or collection");
-            return "response";
-        }
         String response = collectionService.deleteCollection(db_name,collection_name,session);
         if(!response.equals("delete-success")){
             model.addAttribute("result",response);

@@ -82,23 +82,4 @@ public class DatabaseService {
         return response.toString();
     }
 
-    @SneakyThrows
-    public boolean isExist(String db_name, HttpSession session){
-        User user = (User)session.getAttribute("login");
-        String workerId = employeeService.getWorker(user.getUsername());
-        if(workerId.charAt(0) < '0' || workerId.charAt(0) > '9')
-            workerId = "0";
-        URL dist =new URL("http://w"+workerId+":8080/worker/db/find/" + db_name);
-        HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
-        conn.setRequestMethod("GET");
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(conn.getInputStream()));
-        String inputLine;
-        StringBuilder response = new StringBuilder();
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-        return response.toString().equals("true");
-    }
 }

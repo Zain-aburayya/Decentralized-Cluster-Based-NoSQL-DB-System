@@ -90,9 +90,9 @@ public class HashIndexing {
     }
 
     @SneakyThrows
-    public void deleteById(String db_name , String collection_name ,
+    public String deleteById(String db_name , String collection_name ,
                            String value, String update){
-        deleteAllProperty(db_name,collection_name,value,update);
+        return deleteAllProperty(db_name,collection_name,value,update);
     }
 
     private int getIndex(String db_name, String collection_name, String id){
@@ -104,7 +104,7 @@ public class HashIndexing {
     }
 
     @SneakyThrows
-    public void deleteAllProperty(String db_name , String collection_name , String  id, String update){
+    public String deleteAllProperty(String db_name , String collection_name , String  id, String update){
         int index = getIndex(db_name,collection_name,id);
         String path = Database.getInstance().getDB_PATH() + db_name + "/" + collection_name + ".json";
         ObjectMapper objectMapper = new ObjectMapper();
@@ -118,7 +118,7 @@ public class HashIndexing {
             }
         }
         if(index == -1 || indexInData == -1) {
-            return;
+            return "not found this document";
         }
         deleteFromFile(db_name,collection_name,indexInData);
         Map<String, String> jsonMap = objectMapper.convertValue(
@@ -133,6 +133,7 @@ public class HashIndexing {
             workers.deleteDocument(db_name,collection_name,id);
         }
         Affinity.getInstance().updateAffinity();
+        return "delete document done ...";
     }
 
     @SneakyThrows
