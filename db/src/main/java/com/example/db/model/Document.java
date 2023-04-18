@@ -5,6 +5,7 @@ import com.example.db.affinity.Affinity;
 import com.example.db.cluster.Workers;
 import com.example.db.index.HashIndexing;
 import com.example.db.json.JsonValidation;
+import com.example.db.lock.Lock;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -22,32 +23,35 @@ public class Document {
         String path = Database.getInstance().getDB_PATH() + db_name + "/" + collection_name + ".json";
         File file = new File(path);
         boolean isUpdate = update.equalsIgnoreCase("update");
-        if(!file.exists()){
-            return "file doesn't exist ...";
-        }
-        if(!jsonValidation.schemaValidator(db_name , collection_name ,json)){
-            return "failed to add document...";
-        }
-        if(HashIndexing.getInstance().isExistId(db_name,collection_name,json)){
-           return "Id is already exist ...";
-        }
+        Object lock = Lock.getInstance().getLock(db_name + "-" + collection_name);
+        synchronized (lock){
+            if (!file.exists()) {
+                return "file doesn't exist ...";
+            }
+            if (!jsonValidation.schemaValidator(db_name, collection_name, json)) {
+                return "failed to add document...";
+            }
+            if (HashIndexing.getInstance().isExistId(db_name, collection_name, json)) {
+                return "Id is already exist ...";
+            }
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode root = (ObjectNode) objectMapper.readTree(new File(path));
-        ArrayNode data = (ArrayNode) root.get("data");
-        if (data == null) {
-            data = objectMapper.createArrayNode();
-            root.set("data", data);
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectNode root = (ObjectNode) objectMapper.readTree(new File(path));
+            ArrayNode data = (ArrayNode) root.get("data");
+            if (data == null) {
+                data = objectMapper.createArrayNode();
+                root.set("data", data);
+            }
+            JsonNode jsonNode = objectMapper.readTree(json);
+            addToIndexing(db_name, collection_name, json);
+            data.add(jsonNode);
+            FileWriter writer = new FileWriter(path);
+            objectMapper.writeValue(writer, root);
+            writer.close();
+            if (isUpdate)
+                workers.buildDocument(db_name, collection_name, json);
+            Affinity.getInstance().updateAffinity();
         }
-        JsonNode jsonNode = objectMapper.readTree(json);
-        addToIndexing(db_name, collection_name, json);
-        data.add(jsonNode);
-        FileWriter writer = new FileWriter(path);
-        objectMapper.writeValue(writer, root);
-        writer.close();
-        if (isUpdate)
-            workers.buildDocument(db_name,collection_name,json);
-        Affinity.getInstance().updateAffinity();
         return "success add a document ... ";
     }
 

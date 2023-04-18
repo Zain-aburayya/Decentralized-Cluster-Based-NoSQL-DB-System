@@ -2,7 +2,10 @@ package com.example.db.index;
 
 import com.example.db.affinity.Affinity;
 import com.example.db.cluster.Workers;
+import com.example.db.lock.Lock;
 import com.example.db.model.Database;
+import com.example.db.service.CollectionService;
+import com.example.db.service.DatabaseService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +20,8 @@ import java.util.*;
 public class HashIndexing {
     HashMap<Indexing, List<Integer>> hashMap = new HashMap<>();
     private final Workers workers = new Workers();
+    private final CollectionService collectionService = new CollectionService();
+    private final DatabaseService databaseService = new DatabaseService();
     private static HashIndexing instance = null;
     public static HashIndexing getInstance(){
         if( instance == null)
@@ -105,34 +110,42 @@ public class HashIndexing {
 
     @SneakyThrows
     public String deleteAllProperty(String db_name , String collection_name , String  id, String update){
-        int index = getIndex(db_name,collection_name,id);
-        String path = Database.getInstance().getDB_PATH() + db_name + "/" + collection_name + ".json";
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode root = (ObjectNode) objectMapper.readTree(new File(path));
-        ArrayNode data = (ArrayNode) root.get("data");
-        int indexInData = -1;
-        for(int i = 0 ; i < data.size() ; i++){
-            if(data.get(i).get("id").toString().equals("\""+id+"\"")) {
-                indexInData = i;
-                break;
-            }
-        }
-        if(index == -1 || indexInData == -1) {
-            return "not found this document";
-        }
-        deleteFromFile(db_name,collection_name,indexInData);
-        Map<String, String> jsonMap = objectMapper.convertValue(
-                objectMapper.readTree(data.get(indexInData).toString()),
-                new TypeReference<>() {
+        Object lock = Lock.getInstance().getLock(db_name + "-" + collection_name);
+        synchronized (lock){
+            int index = getIndex(db_name, collection_name, id);
+            String path = Database.getInstance().getDB_PATH() + db_name + "/" + collection_name + ".json";
+            File file = new File(path);
+            if(!databaseService.isExist(db_name))
+                return "database not found";
+            if(!collectionService.isExist(db_name,collection_name))
+                return "collection not found";
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectNode root = (ObjectNode) objectMapper.readTree(new File(path));
+            ArrayNode data = (ArrayNode) root.get("data");
+            int indexInData = -1;
+            for (int i = 0; i < data.size(); i++) {
+                if (data.get(i).get("id").toString().equals("\"" + id + "\"")) {
+                    indexInData = i;
+                    break;
                 }
-        );
-        for(Map.Entry<String, String> entry :jsonMap.entrySet() ){
-            deleteFromIndexing(db_name,collection_name, entry.getKey(), entry.getValue() , index + 1);
+            }
+            if (index == -1 || indexInData == -1) {
+                return "not found this document";
+            }
+            deleteFromFile(db_name, collection_name, indexInData);
+            Map<String, String> jsonMap = objectMapper.convertValue(
+                    objectMapper.readTree(data.get(indexInData).toString()),
+                    new TypeReference<>() {
+                    }
+            );
+            for (Map.Entry<String, String> entry : jsonMap.entrySet()) {
+                deleteFromIndexing(db_name, collection_name, entry.getKey(), entry.getValue(), index + 1);
+            }
+            if (update.equalsIgnoreCase("update")) {
+                workers.deleteDocument(db_name, collection_name, id);
+            }
+            Affinity.getInstance().updateAffinity();
         }
-        if(update.equalsIgnoreCase("update")) {
-            workers.deleteDocument(db_name,collection_name,id);
-        }
-        Affinity.getInstance().updateAffinity();
         return "delete document done ...";
     }
 
@@ -151,38 +164,42 @@ public class HashIndexing {
     @SneakyThrows
     public String updateById(String db_name , String collection_name ,
                              String id , String prop , String value , String update){
-        int index = getIndex(db_name,collection_name,id);
-        if(prop.equalsIgnoreCase("id"))
-            return "you can't update an id ...";
-        if(index == -1)
-            return "id not found ... ";
-        String path = Database.getInstance().getDB_PATH() + db_name + "/" + collection_name + ".json";
-        File file = new File(path);
-        if(!file.exists())
-            return "file not found ...";
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectNode root = objectMapper.readValue(file, ObjectNode.class);
-        ArrayNode data = (ArrayNode) root.get("data");
-        if (data == null) {
-            return "The array in json file not found ...";
-        }
-        JsonNode node = data.get(index);
-        if(node == null)
-            return "JsonNode is null ...";
-        Map<String, String> jsonMap = objectMapper.convertValue(
-                objectMapper.readTree(data.get(index).toString()),
-                new TypeReference<>() {
-                }
-        );
-        String preValue = "";
-        for(Map.Entry<String, String> entry :jsonMap.entrySet() ){
-            if(prop.equals(entry.getKey())){
-                preValue = entry.getValue();
-                break;
+        Object lock = Lock.getInstance().getLock(db_name + "-" + collection_name);
+        String preValue;
+        synchronized (lock){
+            int index = getIndex(db_name, collection_name, id);
+            if (prop.equalsIgnoreCase("id"))
+                return "you can't update an id ...";
+            if (index == -1)
+                return "id not found ... ";
+            String path = Database.getInstance().getDB_PATH() + db_name + "/" + collection_name + ".json";
+            File file = new File(path);
+            if (!file.exists())
+                return "file not found ...";
+            ObjectMapper objectMapper = new ObjectMapper();
+            ObjectNode root = objectMapper.readValue(file, ObjectNode.class);
+            ArrayNode data = (ArrayNode) root.get("data");
+            if (data == null) {
+                return "The array in json file not found ...";
             }
+            JsonNode node = data.get(index);
+            if (node == null)
+                return "JsonNode is null ...";
+            Map<String, String> jsonMap = objectMapper.convertValue(
+                    objectMapper.readTree(data.get(index).toString()),
+                    new TypeReference<>() {
+                    }
+            );
+            preValue = "";
+            for (Map.Entry<String, String> entry : jsonMap.entrySet()) {
+                if (prop.equals(entry.getKey())) {
+                    preValue = entry.getValue();
+                    break;
+                }
+            }
+            ((ObjectNode) node).put(prop, value);
+            objectMapper.writeValue(file, root);
         }
-        ((ObjectNode) node).put(prop, value);
-        objectMapper.writeValue(file, root);
         return updateIndexing(db_name,collection_name,id,prop,value,preValue,update);
     }
 

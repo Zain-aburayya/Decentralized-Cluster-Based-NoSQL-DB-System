@@ -1,11 +1,13 @@
 package com.example.db.model;
 import com.example.db.affinity.Affinity;
 import com.example.db.cluster.Workers;
+import com.example.db.lock.Lock;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.SneakyThrows;
+import lombok.Synchronized;
 import net.minidev.json.JSONArray;
 import net.minidev.json.JSONObject;
 
@@ -32,25 +34,28 @@ public class Collection {
         }
         String jsonFile = path + "/" + collection_name + ".json";
         boolean isUpdate = update.equalsIgnoreCase("update");
-        if(isUpdate && this.isExist(db_name,collection_name)){
-            if(workers.checkWorkersCollection(db_name,collection_name)){
+        Object lock = Lock.getInstance().getLock(db_name + "-" + collection_name);
+        synchronized(lock){
+            if(isUpdate && this.isExist(db_name,collection_name)){
+                if(workers.checkWorkersCollection(db_name,collection_name)){
+                    return "database is already exist ...";
+                }
+            }
+            else if(this.isExist(db_name,collection_name)){
                 return "database is already exist ...";
             }
+            if (isUpdate)
+                workers.buildCollection(db_name, collection_name, json);
+            JSONArray jsonArray = new JSONArray();
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("data", jsonArray);
+            path += "/schema/schema_" + collection_name + ".json";
+            addSchema(path, json);
+            FileWriter fileWriter = new FileWriter(jsonFile);
+            fileWriter.write(jsonObject.toString());
+            fileWriter.close();
+            Affinity.getInstance().updateAffinity();
         }
-        else if(this.isExist(db_name,collection_name)){
-            return "database is already exist ...";
-        }
-        if(isUpdate)
-            workers.buildCollection(db_name, collection_name, json);
-        JSONArray jsonArray = new JSONArray();
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("data", jsonArray);
-        path += "/schema/schema_" + collection_name + ".json";
-        addSchema(path,json);
-        FileWriter fileWriter = new FileWriter(jsonFile);
-        fileWriter.write(jsonObject.toString());
-        fileWriter.close();
-        Affinity.getInstance().updateAffinity();
         return "added Collection ...";
     }
     @SneakyThrows
@@ -79,16 +84,19 @@ public class Collection {
         objectMapper.writeValue(file, schemaNode);
     }
     public Boolean deleteCollection(String db_name, String collection_name, String update){
+        Object lock = Lock.getInstance().getLock(db_name + "-" + collection_name);
         String path = Database.getInstance().getDB_PATH() + db_name + "/" + collection_name + ".json";
         File file = new File(path);
-        if(file.exists()){
-            if(update.equalsIgnoreCase("update"))
-                workers.deleteCollection(db_name,collection_name);
-            Affinity.getInstance().updateAffinity();
-            file.delete();
-            path = Database.getInstance().getDB_PATH() + db_name + "/schema/schema_" + collection_name +".json";
-            file = new File(path);
-            return file.delete();
+        synchronized (lock){
+            if (file.exists()) {
+                if (update.equalsIgnoreCase("update"))
+                    workers.deleteCollection(db_name, collection_name);
+                Affinity.getInstance().updateAffinity();
+                file.delete();
+                path = Database.getInstance().getDB_PATH() + db_name + "/schema/schema_" + collection_name + ".json";
+                file = new File(path);
+                return file.delete();
+            }
         }
         return false;
     }

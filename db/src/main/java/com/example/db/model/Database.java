@@ -2,6 +2,8 @@ package com.example.db.model;
 
 import com.example.db.affinity.Affinity;
 import com.example.db.cluster.Workers;
+import lombok.SneakyThrows;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import org.springframework.scheduling.annotation.Async;
 
 import java.io.File;
@@ -52,18 +54,15 @@ public class Database {
         return "Creating successfully";
     }
 
+    @SneakyThrows
     public Boolean deleteDB(String db_name, String update){
         File file = new File(DB_PATH + db_name);
         if(file.exists() && file.isDirectory()){
-            File[] files = file.listFiles();
-            if(files != null){
-                for(File f : files)
-                    f.delete();
-            }
+            FileUtils.deleteDirectory(file);
             if(update.equalsIgnoreCase("update"))
                 workers.deleteDatabase(db_name);
             Affinity.getInstance().updateAffinity();
-            return file.delete();
+            return true;
         }
         return false;
     }
