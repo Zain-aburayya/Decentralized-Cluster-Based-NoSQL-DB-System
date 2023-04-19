@@ -21,7 +21,7 @@ public class Affinity {
         File file = new File("./src/main/resources/aff.json");
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(file);
-        ((ObjectNode) root).put(AFFINITY_FIELD, (root.get("affinity").intValue() + 1) % 4);
+        ((ObjectNode) root).put(AFFINITY_FIELD, (root.get(AFFINITY_FIELD).intValue() + 1) % 4);
         mapper.writeValue(file, root);
     }
 
