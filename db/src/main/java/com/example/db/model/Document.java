@@ -34,7 +34,6 @@ public class Document {
             if (HashIndexing.getInstance().isExistId(db_name, collection_name, json)) {
                 return "Id is already exist ...";
             }
-
             ObjectMapper objectMapper = new ObjectMapper();
             ObjectNode root = (ObjectNode) objectMapper.readTree(new File(path));
             ArrayNode data = (ArrayNode) root.get("data");

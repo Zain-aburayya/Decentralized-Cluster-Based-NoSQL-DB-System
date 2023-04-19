@@ -18,7 +18,7 @@ import java.io.FileWriter;
 import java.util.*;
 
 public class HashIndexing {
-    HashMap<Indexing, List<Integer>> hashMap = new HashMap<>();
+    private HashMap<Indexing, List<Integer>> hashMap = new HashMap<>();
     private final Workers workers = new Workers();
     private final CollectionService collectionService = new CollectionService();
     private final DatabaseService databaseService = new DatabaseService();
