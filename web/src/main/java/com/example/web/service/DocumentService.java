@@ -31,8 +31,9 @@ public class DocumentService {
                           HttpSession session ){
         User user = (User) session.getAttribute("login");
         String workerId = employeeService.getWorker(user.getUsername());
-        if(workerId.charAt(0) < '0' || workerId.charAt(0) > '9')
+        if (!Character.isDigit(workerId.charAt(0))) {
             workerId = "0";
+        }
         URL dist =new URL("http://w"+workerId+":8080/worker/document/list/" + db_name +"/" + collection_name);
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
         conn.setRequestMethod("GET");
@@ -62,8 +63,9 @@ public class DocumentService {
         String json = mapper.writeValueAsString(jsonMap);
         System.out.println("json -> " + json);
         String workerId = employeeService.getWorker(user.getUsername());
-        if(workerId.charAt(0) < '0' || workerId.charAt(0) > '9')
+        if (!Character.isDigit(workerId.charAt(0))) {
             workerId = "0";
+        }
         URL dist =new URL("http://w"+workerId+":8080/worker/db/add/document/" + db_name +"/" + collection_name + "/update/true");
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
         conn.setRequestMethod("POST");
@@ -114,8 +116,9 @@ public class DocumentService {
     private String getSchema(String db_name , String collection_name ,HttpSession session) {
         User user = (User) session.getAttribute("login");
         String workerId = employeeService.getWorker(user.getUsername());
-        if(workerId.charAt(0) < '0' || workerId.charAt(0) > '9')
+        if (!Character.isDigit(workerId.charAt(0))) {
             workerId = "0";
+        }
         URL dist =new URL("http://w"+workerId+":8080/worker/document/schema/" + db_name +"/" + collection_name);
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
         conn.setRequestMethod("GET");
@@ -134,8 +137,9 @@ public class DocumentService {
     public String deleteDocument(String db_name , String collection_name , String id , HttpSession session){
         User user = (User) session.getAttribute("login");
         String workerId = employeeService.getWorker(user.getUsername());
-        if(workerId.charAt(0) < '0' || workerId.charAt(0) > '9')
+        if (!Character.isDigit(workerId.charAt(0))) {
             workerId = "0";
+        }
         URL dist =new URL("http://w"+workerId+":8080/worker/db/delete/document/" +
                 db_name +"/" + collection_name + "/" + id + "/update/true");
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();

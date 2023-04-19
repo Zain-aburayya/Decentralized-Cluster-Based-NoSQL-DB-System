@@ -18,8 +18,9 @@ public class CollectionService {
     public String createCollection(String db_name , String collection_name ,String json, HttpSession session){
         User user = (User) session.getAttribute("login");
         String workerId = employeeService.getWorker(user.getUsername());
-        if(workerId.charAt(0) < '0' || workerId.charAt(0) > '9')
+        if (!Character.isDigit(workerId.charAt(0))) {
             workerId = "0";
+        }
         URL dist =new URL("http://w"+workerId+":8080/worker/db/add/collection/" + db_name +"/"+collection_name+"/update/true");
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
         conn.setRequestMethod("POST");
@@ -45,8 +46,9 @@ public class CollectionService {
     public String deleteCollection(String db_name , String collection_name , HttpSession session){
         User user = (User) session.getAttribute("login");
         String workerId = employeeService.getWorker(user.getUsername());
-        if(workerId.charAt(0) < '0' || workerId.charAt(0) > '9')
+        if (!Character.isDigit(workerId.charAt(0))) {
             workerId = "0";
+        }
         URL dist =new URL("http://w"+workerId+":8080/worker/db/delete/collection/" + db_name +"/"+collection_name+"/true/true");
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
         conn.setRequestMethod("DELETE");
@@ -67,8 +69,9 @@ public class CollectionService {
     public String getList(String db_name,HttpSession session){
         User user = (User) session.getAttribute("login");
         String workerId = employeeService.getWorker(user.getUsername());
-        if(workerId.charAt(0) < '0' || workerId.charAt(0) > '9')
+        if (!Character.isDigit(workerId.charAt(0))) {
             workerId = "0";
+        }
         URL dist =new URL("http://w"+workerId+":8080/worker/collection/list/" + db_name);
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
         conn.setRequestMethod("GET");

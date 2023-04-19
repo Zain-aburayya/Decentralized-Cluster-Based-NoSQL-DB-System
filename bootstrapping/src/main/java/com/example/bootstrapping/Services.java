@@ -23,7 +23,6 @@ public class Services {
     public void setWorkerUser(String username , String token){
         String workerId = Affinity.getInstance().getValue().toString();
         AuthenticationModel model = new AuthenticationModel(username,token,workerId);
-        System.out.println("here --> " + Affinity.getInstance().getValue().toString());
         addUserToJson(model);
     }
 
@@ -46,7 +45,6 @@ public class Services {
         FileWriter writer = new FileWriter(path);
         mapper.writeValue(writer, root);
         writer.close();
-        /*Affinity.getInstance().updateAffinity();*/
     }
 
     @SneakyThrows

@@ -18,8 +18,9 @@ public class DatabaseService {
     public String createDatabase(String db_name , HttpSession session){
         User user = (User) session.getAttribute("login");
         String workerId = employeeService.getWorker(user.getUsername());
-        if(workerId.charAt(0) < '0' || workerId.charAt(0) > '9')
+        if (!Character.isDigit(workerId.charAt(0))) {
             workerId = "0";
+        }
         URL dist =new URL("http://w"+workerId+":8080/worker/db/create/database/" + db_name +"/update/true");
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
         conn.setRequestMethod("GET");
@@ -42,8 +43,9 @@ public class DatabaseService {
     public boolean deleteDatabase(String db_name , HttpSession session){
         User user = (User) session.getAttribute("login");
         String workerId = employeeService.getWorker(user.getUsername());
-        if(workerId.charAt(0) < '0' || workerId.charAt(0) > '9')
+        if (!Character.isDigit(workerId.charAt(0))) {
             workerId = "0";
+        }
         URL dist =new URL("http://w"+workerId+":8080/worker/db/delete/database/" + db_name +"/true/true");
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
         conn.setRequestMethod("DELETE");
@@ -66,8 +68,9 @@ public class DatabaseService {
     public String getList(HttpSession session){
         User user = (User) session.getAttribute("login");
         String workerId = employeeService.getWorker(user.getUsername());
-        if(workerId.charAt(0) < '0' || workerId.charAt(0) > '9')
+        if (!Character.isDigit(workerId.charAt(0))) {
             workerId = "0";
+        }
         URL dist =new URL("http://w"+workerId+":8080/worker/database/list");
         HttpURLConnection conn = (HttpURLConnection) dist.openConnection();
         conn.setRequestMethod("GET");

@@ -1,13 +1,13 @@
 package com.example.db.lock;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Lock {
-    private static HashMap<String,Object> locks;
+    private static ConcurrentHashMap<String,Object> locks;
     private static Lock instance = null;
 
     private Lock(){
-        locks = new HashMap<>();
+        locks = new ConcurrentHashMap<>();
     }
 
     public static Lock getInstance(){
@@ -17,8 +17,7 @@ public class Lock {
     }
 
     public Object getLock(String lockName){
-        if(!locks.containsKey(lockName))
-            initLock(lockName);
+        locks.putIfAbsent(lockName,new Object());
         return locks.get(lockName);
     }
 

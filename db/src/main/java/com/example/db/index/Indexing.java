@@ -15,4 +15,3 @@ public class Indexing {
     private String property;
     private String value;
 }
-// database a , collcection s , name , value zain
